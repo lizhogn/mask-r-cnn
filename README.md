@@ -24,13 +24,13 @@ Mask-RCNN 大体框架还是 Faster-RCNN 的框架，可以说在基础特征网
 
 
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\Mask R-CNN framework.png" alt="mask r-cnn framework" style="zoom: 50%;" />
+<img src="imgs\原理解析\Mask R-CNN framework.png" alt="mask r-cnn framework" style="zoom: 50%;" />
 
 <center>图1 Mask R-CNN 总体框图</center>
 
 ## 架构分解
 
-![maskrcnn details](C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\Mask R-CNN details.png)
+![maskrcnn details](imgs\原理解析\Mask R-CNN details.png)
 
 <center> 图2 Mask R-CNN展开图</center>
 
@@ -38,7 +38,7 @@ Mask-RCNN 大体框架还是 Faster-RCNN 的框架，可以说在基础特征网
 
 为了便于训练，图像在输入网络前需要进行一定的预处理。
 
-![img preprocessing](C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\imge preprocessing.jpeg)
+![img preprocessing](imgs\原理解析\imge preprocessing.jpeg)
 
 <center> 图像处理流程 </center>
 
@@ -58,7 +58,7 @@ backbone是一系列的卷积层用于提取图像的feature maps，比如可以
 
 ResNet（深度残差网络）实际上就是为了能够训练更加深层的网络提供了有利的思路，毕竟之前一段时间里面一直相信深度学习中网络越深得到的效果会更加的好，但是在构建了太深层之后又会使得网络退化。ResNet使用了跨层连接，使得训练更加容易。
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\resNet.png" style="zoom:60%;" />
+<img src="imgs\原理解析\resNet.png" style="zoom:60%;" />
 
 <center> 残差网络结构 </center>
 
@@ -70,7 +70,7 @@ ResNet（深度残差网络）实际上就是为了能够训练更加深层的�
 
 * **Indetity** **Block**
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\identityblock.png" style="zoom:50%;" />
+<img src="imgs\原理解析\identityblock.png" style="zoom:50%;" />
 
  <center> 跳过三个卷积的identity block </center>
 
@@ -78,7 +78,7 @@ ResNet（深度残差网络）实际上就是为了能够训练更加深层的�
 
 * **Conv Block**
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\convblock.png" style="zoom:50%;" />
+<img src="imgs\原理解析\convblock.png" style="zoom:50%;" />
 
 <center>跳过三个卷积并在shortcut上存在的卷积的conv block</center>
 
@@ -88,7 +88,7 @@ ResNet（深度残差网络）实际上就是为了能够训练更加深层的�
 
 其实在作者的代码中，主路中的第一个和第三个卷积都是1*1的卷积（改变的只有feature maps的通道大小，不改变长和宽），为了降维从而实现卷积运算的加速；注意需要保持shortcut和主路最后一个卷积层的channel要相同才能够进行相加。下面展示Res-net101的完整框架：
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\resnet101.png" style="zoom:67%;" />
+<img src="imgs\原理解析\resnet101.png" style="zoom:67%;" />
 
 从图中可以得知ResNet分为了5个stage，C1-C5分别为每个Stage的输出，这些输出在后面的FPN中会使用到。你可以数数，看看是不是总共101层，数的时候除去BatchNorm层。注：stage4中是由一个conv_block和22个identity_block，如果要改成ResNet50网络的话只需要调整为5个identity_block.
 
@@ -104,11 +104,11 @@ FPN是为了**自然地利用CNN层级特征的金字塔形式，同时生成在
 
 如下图所示： **Top**: 一个带有skip connection的网络结构在预测的时候是在finest level（自顶向下的最后一层）进行的，简单讲就是经过多次上采样并融合特征到最后一步，拿最后一步生成的特征做预测。**Bottom**: FPN网络结构和上面的类似，区别在于预测是在每一层中独立进行的。后面的实验证明finest level的效果不如FPN好，原因在于FPN网络是一个窗口大小固定的滑动窗口检测器，因此在金字塔的不同层滑动可以增加其对尺度变化的鲁棒性。另外虽然finest level有更多的anchor，但仍然效果不如FPN好，说明增加anchor的数量并不能有效提高准确率。
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\FPN net.png" style="zoom: 33%;" />
+<img src="imgs\原理解析\FPN net.png" style="zoom: 33%;" />
 
 ##### 2.2.2 特征融合图
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\FPN img.jpeg" style="zoom: 67%;" />
+<img src="imgs\原理解析\FPN img.jpeg" style="zoom: 67%;" />
 
 <center> 特征金字塔特征提取过程</center>
 
@@ -126,7 +126,7 @@ FPN是为了**自然地利用CNN层级特征的金字塔形式，同时生成在
 
   {C2, C3, C4, C5}层对应的融合特征层为{P2, P3, P4, P5}，对应的层空间尺寸是相通的。
 
-  <img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\detail_upsampling.png" style="zoom:50%;" />
+  <img src="imgs\原理解析\detail_upsampling.png" style="zoom:50%;" />
 
 从图中可以看出+的意义为：左边的底层特征层通过1×1的卷积得到与上一层特征层相同的通道数；上层的特征层通过上采样得到与下一层特征层一样的长和宽再进行相加，从而得到了一个融合好的新的特征层。举个例子说就是：C4层经过1×1卷积得到与P5相同的通道，P5经过上采样后得到与C4相同的长和宽，最终两者进行相加，得到了融合层P4，其他的以此类推。
 
@@ -136,7 +136,7 @@ FPN是为了**自然地利用CNN层级特征的金字塔形式，同时生成在
 
 #### 2.3 输出
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\feature_map_output.jpg" style="zoom:87%;" />
+<img src="imgs\原理解析\feature_map_output.jpg" style="zoom:87%;" />
 
 经过高层特征与底层特征的融合之后，每层进行特征输出，分别得到[P2, P3, P4, P5, P6]五层。其中RPN网络将用到[P2, P3, P4, P5, P6]， 而目标检测网络部分用到[P2, P3, P4, P5]，也就是说，P6 16×16的特征张量只用于RPN（感兴趣区域生成网络中），用途后面具体再聊。
 
@@ -159,13 +159,13 @@ FPN是为了**自然地利用CNN层级特征的金字塔形式，同时生成在
 
 
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\rpn_network.jpg" style="zoom: 67%;" />
+<img src="imgs\原理解析\rpn_network.jpg" style="zoom: 67%;" />
 
 <center> 特征金字塔特征提取过程</center>
 
 #### 3.1 锚框生成
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\anchors_f.png" style="zoom: 33%;" />
+<img src="imgs\原理解析\anchors_f.png" style="zoom: 33%;" />
 
 首先，需要理解锚框的概念，在这篇[博文](https://zhuanlan.zhihu.com/p/63024247)中对锚框有着很好的说明。笼统的说，P2~P6的特征图相当于将原来1024×1024的图像进行了分块，将每一块都压缩成一个像素点，然后，以该像素点为中心进行框选周边区域，为了检测多种形状的物体，同一个像素区域利用多个锚框进行框选。具体参数如下：
 
@@ -178,13 +178,13 @@ FPN是为了**自然地利用CNN层级特征的金字塔形式，同时生成在
 
 - **generate_anchors**是具体的为每一特征层生成anchor的函数，**generate_pyramid_anchors**用于拼接不同scale的anchor，最终得到anchors的shape为[anchor_count, (y1, x1, y2, x2)]，此时计算的anchor_count = (256×256 + 128×128 + 64×*64 + 32×32 + 16×16)*3 = 261888。数量如此多的锚框不可能全部用于预测，所以有了后续的proposallayer进行筛选。
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\anchors.jpg" style="zoom:67%;" />
+<img src="imgs\原理解析\anchors.jpg" style="zoom:67%;" />
 
 
 
 #### 3.2 RPN 网络
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\rpn_1.jpeg" style="zoom:67%;" />
+<img src="imgs\原理解析\rpn_1.jpeg" style="zoom:67%;" />
 
 FPN输出的特征映射张量[P2, P3, P4, P5, P6]将用于RPN网络，P[?]代表的张量形状各不相同，因此需要分开处理，RPN网络的结构如下图所示，以P2为例：
 
@@ -203,11 +203,11 @@ FPN输出的特征映射张量[P2, P3, P4, P5, P6]将用于RPN网络，P[?]代�
 
 **最终输出形式：**
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\rpn_2.jpg" style="zoom:67%;" />
+<img src="imgs\原理解析\rpn_2.jpg" style="zoom:67%;" />
 
 #### 3.3 Proposal Layer
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\proposallayer.jpeg" style="zoom:67%;" />
+<img src="imgs\原理解析\proposallayer.jpeg" style="zoom:67%;" />
 
 Proposal Layer的输入来自于前两部分：Anchors生成和RPN输出。在Proposal Layer中，并没有需要进行训练的参数，只是利用算法进行anchors的选择与修正工作。
 
@@ -219,7 +219,7 @@ Proposal Layer的输入来自于前两部分：Anchors生成和RPN输出。在Pr
 * **nms**执行非极大值抑制，根据IoU阈值选择出2000个rois，如果选择的rois不足2000，则用0进行pad填充。
 * 最终返回的proposals赋值给rpn_rois，作为rpn网络提供的建议区，注入后续FPN heads进行分类、目标框和像素分割的检测。（图中Concatenate boxes from all feature maps of FPN应该是pytorch版本的实现方法，在本结构中，在rpn网络输出的时候就已经将各特征层融合在一起了。）
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\proposallayer1.jpg" style="zoom:67%;" />
+<img src="imgs\原理解析\proposallayer1.jpg" style="zoom:67%;" />
 
 
 
@@ -227,7 +227,7 @@ Proposal Layer的输入来自于前两部分：Anchors生成和RPN输出。在Pr
 
 利用rpn_feature_map和anchors提取出rois，rois和maskrcnn_feature_map一起输入到网络的第三部分：Network Heads。
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\Mask R-CNN framework.png" style="zoom:38%;" />
+<img src="imgs\原理解析\Mask R-CNN framework.png" style="zoom:38%;" />
 
 #### 4.1 RoIAlign layer
 
@@ -237,15 +237,15 @@ RoIAlign的作用是根据rois的坐标，在feature_map中将对应的区域框
 
   离散数据和连续数据不一样，由于rois中的坐标值是离散的，而feature_map中的值是离散的，所以在进行区域截取的时候必然会发生区域的错位现象，为了保证区域的对齐，作者在这里采用了一种叫做RoIAlign的算法，利用二次插值，计算出rois坐标位置的插值，然后进行点的计算与下采样，这样得到的fixed_size_feature_map与rois标注的区域差别最小。
 
-  <img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\roialign.jpeg" style="zoom:67%;" />
+  <img src="imgs\原理解析\roialign.jpeg" style="zoom:67%;" />
 
   <center> 4.1.1 feature_map和rois</center>
 
-  <img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\roialign_old.jpeg" style="zoom: 67%;" />
+  <img src="imgs\原理解析\roialign_old.jpeg" style="zoom: 67%;" />
 
   <center> 4.1.2 fast_rcnn采用的区域选择方式</center>
 
-  <img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\rois_new.jpeg" style="zoom:67%;" />
+  <img src="imgs\原理解析\rois_new.jpeg" style="zoom:67%;" />
 
   <center> 4.1.3 mask_rcnn采用的区域对齐方式</center>
 
@@ -261,7 +261,7 @@ $$
 
 #### 4.2 结构
 
-<img src="C:\Users\15214\OneDrive - stu.hit.edu.cn\手册\MaskRCNN manual\imgs\原理解析\network_heads.jpg" style="zoom:80%;" />
+<img src="imgs\原理解析\network_heads.jpg" style="zoom:80%;" />
 
 整体**FPN heads**分为两个分支，一是用于**分类**和**回归目标框偏移**的**fpn_classifier_graph**，一是用于**像素分割**的**build_fpn_mask_graph**，两者都是将rois在对应mrcnn_feature_maps特征层进行roialign特征提取，然后再经过各自的卷积操作预测最终结果。
 
